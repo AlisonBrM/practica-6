@@ -158,7 +158,7 @@ Los detalles de cada endpoint están en [docs/api.md](docs/api.md).
 |---|---|---|
 | *(completar)* | *(completar)* | AlisonBrM |
 | *(completar)* | *(completar)* | MaferCorzo |
-| *(completar)* | *(completar)* | *(completar)* |
+| *(Juan Camilo Uribe Mendoza)* | *(1152326)* | *(camilo2212)* |
 
 ## URL de la aplicación
 

@@ -61,5 +61,7 @@ La miniatura lleva tres metadatos propios, escritos en la misma operación con q
 | `autor` | El nombre que escribió quien subió la foto |
 | `etiquetas` | Las etiquetas en JSON, o vacío si Vision no respondió |
 | `vision` | `ok`, o `error: ...` con el motivo |
+| `texto` | El texto que Vision leyó en la foto (`text_detection`), en una sola línea y de máximo 1.000 caracteres; vacío si no hay texto |
+| `texto_vision` | `ok`, o `error: ...` si la lectura de texto falló |
 
 Los originales se guardan pero el backend nunca los sirve: lo único que sale hacia los navegadores son las miniaturas.

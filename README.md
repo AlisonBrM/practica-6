@@ -156,9 +156,9 @@ Los detalles de cada endpoint están en [docs/api.md](docs/api.md).
 
 | Nombre | Código | Usuario de GitHub |
 |---|---|---|
-| *(completar)* | *(completar)* | AlisonBrM |
-| *(completar)* | *(completar)* | MaferCorzo |
-| *(Juan Camilo Uribe Mendoza)* | *(1152326)* | *(camilo2212)* |
+| Alison Brigitte Martinez Machado | 1152299 | AlisonBrM |
+| Maria Fernanda Corzo Castro | 1152300 | MaferCorzo |
+| Juan Camilo Uribe Mendoza | 1152326 | camilo2212 |
 
 ## URL de la aplicación
 
@@ -192,24 +192,19 @@ flowchart LR
 El único permiso de IAM que damos es la flecha punteada del backend al bucket (`google_storage_bucket_iam_member.backend_objetos`). Vision no lleva rol: basta con que la API esté habilitada en el proyecto.
 
 ## Evidencias por fase
-
-### Fase 0. El repositorio del grupo
-
-*Pendiente:* captura de los colaboradores en Settings → Collaborators del repositorio y de `gcloud config list` en Cloud Shell. No hay captura de esta fase en `Evidencias/`.
-
 ### Fase 1. Registro, imágenes y primer despliegue
 
 Las dos imágenes en Artifact Registry (`grupo6-imagenes`):
 
-![Imágenes backend y frontend en Artifact Registry](Evidencias/Evidencia%2001.1.png)
+![Imágenes backend y frontend en Artifact Registry](evidencias/registro,imagenes,despliegue/Evidencia%2001.1.png)
 
 La página con el aviso de que el backend no tiene bucket:
 
-![La página avisa que no hay bucket](Evidencias/Evidencia%2001.png)
+![La página avisa que no hay bucket](evidencias/registro,imagenes,despliegue/Evidencia%2001.png)
 
 La advertencia `BUCKET está vacía` en los registros del backend, y las respuestas `503` de `GET /fotos` y `POST /fotos`:
 
-![Registros del backend con la advertencia BUCKET vacía](Evidencias/Evidencia%2001.2.png)
+![Registros del backend con la advertencia BUCKET vacía](evidencias/registro,imagenes,despliegue/Evidencia%2001.2.png)
 
 El backend arrancó sin credenciales y respondió `503` con un mensaje claro, que es lo esperado antes de tener bucket.
 
@@ -217,46 +212,88 @@ El backend arrancó sin credenciales y respondió `503` con un mensaje claro, qu
 
 El bucket `cloud-computing-470223-grupo6-fotos` en `us-central1`, clase Standard, con acceso público en "No público", y sus dos "carpetas". En `originales/` está la foto tal como llegó (PNG, 17,2 KB) y en `miniaturas/` su miniatura en JPEG (16,2 KB):
 
-![Objeto en originales/](Evidencias/Evidencia%2002.1.png)
-![Objeto en miniaturas/](Evidencias/Evidencia%2002.2.png)
+![Objeto en originales/](evidencias/bucket/Evidencia%2002.1.png)
+![Objeto en miniaturas/](evidencias/bucket/Evidencia%2002.2.png)
 
 La foto aparece en la galería, pero sin etiquetas:
 
-![Galería con la foto sin etiquetas](Evidencias/Evidencia%2002.png)
+![Galería con la foto sin etiquetas](evidencias/bucket/Evidencia%2002.png)
 
 Y la advertencia del backend, que dice que la API de Vision no está habilitada en el proyecto (`Vision no respondió: 403 ...`). La foto no se perdió:
 
-![Advertencia de Vision 403 en los registros](Evidencias/Evidencia%2002.3.png)
+![Advertencia de Vision 403 en los registros](evidencias/bucket/Evidencia%2002.3.png)
 
 ### Fase 3. Vision
 
 La API de Cloud Vision habilitada en la consola (APIs y servicios):
 
-![Cloud Vision API habilitada](Evidencias/Evidencia%2003.2.png)
+![Cloud Vision API habilitada](evidencias/vision/Evidencia%2003.2.png)
 
 Una foto con sus etiquetas y su confianza en la galería (Food 100 %, Tableware 98 %, Ingredient 98 %…). Las barras en ámbar serían las de confianza menor a 0,7:
 
-![Foto con etiquetas](Evidencias/Evidencia%2003.png)
+![Foto con etiquetas](evidencias/vision/Evidencia%2003.png)
 
 La línea del registro con la foto guardada y su número de etiquetas (`guardada por Alison, 8 etiquetas`). Justo antes se ve la foto anterior, guardada con `0 etiquetas` mientras Vision aún no respondía:
 
-![Registro con 8 etiquetas](Evidencias/Evidencia%2003.1.png)
+![Registro con 8 etiquetas](evidencias/vision/Evidencia%2003.1.png)
 
 ### Fase 4. Ponerlo a prueba
 
-Las dos filas de abajo salen de fotos que ya están en la galería (capturas de la fase 3). Las otras tres hay que subirlas y completarlas.
+Cada foto se subió desde el teléfono y se anotaron sus tres primeras etiquetas, que Vision ordena de mayor a menor confianza. Las fotos 1 y 5 son la misma escena, el cielo visto desde la misma ventana: primero con buena luz y después oscura y a contraluz.
 
-| Foto | Tres primeras etiquetas (confianza) | ¿Acertó? |
+| # | Tipo | Foto | Subió | Etiqueta 1 | Etiqueta 2 | Etiqueta 3 | Comentario |
+|---|---|---|---|---|---|---|---|
+| 1 | Algo común y bien iluminado | Atardecer desde la ventana | Mafer | Afterglow (0,98) | Daytime (0,98) | Red (0,98) | Acierta que es un atardecer, algo muy común en internet, pero le da la misma confianza a "Daytime" que a "Dusk" (0,97): una confianza alta no garantiza que las etiquetas sean coherentes entre sí. |
+| 2 | Algo típico de la región | Plato casero | Mafer | Food (0,995) | Ingredient (0,98) | Tableware (0,94) | Sabe con casi total certeza que es comida, pero no reconoce el plato local: lo más específico que propone es "Curry" (0,93) y "Stew" (0,87), platos comunes en las fotos con que se entrenó. |
+| 3 | Dibujo hecho a mano | Circuito eléctrico en el cuaderno | Mafer | Diagram (0,87) | Number (0,82) | Handwriting (0,75) | Reconoce que es un diagrama a mano con números, pero "Schematic" queda en 0,54 y no identifica resistencias ni fuentes: ve la forma general, no el contenido técnico. |
+| 4 | Algo con texto | Apuntes sobre códigos de corrección (Reed-Solomon) | Mafer | Text (0,95) | Paper Product (0,91) | Paper (0,90) | Sabe que hay texto escrito a mano sobre papel, pero no lee lo que dice. Leer el texto es otra función de la API (`text_detection`), la del reto. |
+| 5 | Lo mismo del punto 1, a contraluz | El mismo cielo desde la ventana, oscuro | Mafer | Photograph (0,99) | Brown (0,92) | Grey (0,83) | Con poca luz ya no reconoce el cielo ni las nubes y responde con etiquetas vagas de color y forma ("Brown", "Grey", "Triangle"), como anticipaba la guía. |
+
+Otras pruebas del grupo (capturas de la fase 3 y foto analizada en la fase 5):
+
+| Tipo | Foto | Subió | Etiqueta 1 | Etiqueta 2 | Etiqueta 3 | Comentario |
+|---|---|---|---|---|---|---|
+| Algo común y bien iluminado | Plato de panqueques | Alison | Food (1,00) | Tableware (0,98) | Ingredient (0,98) | Acierta con lo general; "Dessert" (0,90) y "Breakfast" (0,86) aparecen más abajo. No dice "panqueque": nombra categorías, no el plato. |
+| Algo con texto | Captura de pantalla de un programa | Alison | Font (0,90) | Technology (0,87) | Number (0,85) | Reconoce que es una pantalla con texto ("Screenshot", "Software"), pero no lee el contenido y duda del tipo de programa ("Video Game Software", 0,60). |
+
+**Conclusión.** Vision acierta con lo que abunda en internet (comida, atardeceres, papel con letras), pero se queda en la categoría general: no reconoce un plato local, no entiende un circuito y no lee el texto. Cuando la foto es mala (oscura o a contraluz) no lo dice: sigue respondiendo con confianza alta, pero con etiquetas que describen la imagen (colores, "Photograph") y no lo que hay en ella.
+
+| 1. Atardecer | 2. Plato casero | 3. Circuito a mano |
 |---|---|---|
-| Algo común y bien iluminado: un plato de panqueques | Food 100 %, Tableware 98 %, Ingredient 98 % | Acertó con lo general; "Dessert" 90 % y "Breakfast" 86 % aparecen más abajo. No dice "panqueque": nombra categorías, no el plato. |
-| Algo con texto: captura de una pantalla de computador | Font 90 %, Technology 87 %, Number 85 % | Acertó en lo que es (texto, pantalla), pero no dice de qué trata. Con `text_detection` (reto) sí se lee el contenido. |
-| Algo típico de la región (arepa, empanada, edificio) | *(pendiente)* | *(pendiente)* |
-| Un dibujo o logo hecho a mano | *(pendiente)* | *(pendiente)* |
-| La misma cosa del primer punto, a contraluz o movida | *(pendiente)* | *(pendiente)* |
+| ![Foto 1 con sus etiquetas](evidencias/prueba/captura-1-atardecer.png) | ![Foto 2 con sus etiquetas](evidencias/prueba/captura-2-comida.png) | ![Foto 3 con sus etiquetas](evidencias/prueba/captura-3-circuito.png) |
+| **4. Apuntes con texto** | **5. El cielo a contraluz** | |
+| ![Foto 4 con sus etiquetas](evidencias/prueba/captura-4-texto.png) | ![Foto 5 con sus etiquetas](evidencias/prueba/captura-5-contraluz.png) | |
+
+Las fotos originales están en [`evidencias/prueba/`](evidencias/prueba/).
 
 ### Fase 5. Mirar el bucket por dentro
 
-*Pendiente:* los metadatos de una miniatura (`gcloud storage objects describe gs://$B/miniaturas/<id>.jpg`) y la comparación de tamaños con `gcloud storage ls -l gs://$B/originales/ gs://$B/miniaturas/`. Con la foto de las capturas, el original pesa 17,2 KB y su miniatura 16,2 KB; con fotos de teléfono la diferencia es de decenas de veces.
+Los originales y las miniaturas del bucket, con su tamaño en bytes (`gcloud storage ls -l gs://$B/originales/ gs://$B/miniaturas/`):
+
+![Listado de originales y miniaturas](evidencias/mirar-bucket/miniaturas.png)
+
+En el bucket no hay carpetas reales: `originales/` y `miniaturas/` son solo el comienzo del nombre de cada objeto, y la consola corta por las barras para dibujar el árbol. Por eso listar "lo que empieza por `miniaturas/`" es una sola operación de clase A.
+
+El tamaño de un original junto al de su miniatura, y los metadatos de esa miniatura (`gcloud storage objects describe`). En `custom_fields` están los tres que escribe el backend: `autor`, `etiquetas` (el JSON con nombre y confianza de cada una) y `vision: ok`:
+
+![Tamaños y metadatos de una miniatura](evidencias/mirar-bucket/metadatos.png)
+
+La comparación de tamaños, para esa misma foto:
+
+```
+$ gcloud storage ls -l "gs://$B/originales/20261103-024632-e1dcf1.*" "gs://$B/miniaturas/20261103-024632-e1dcf1.jpg"
+    369393  2026-11-03T02:46:32Z  gs://cloud-computing-470223-grupo6-fotos/originales/20261103-024632-e1dcf1.png
+    142127  2026-11-03T02:46:32Z  gs://cloud-computing-470223-grupo6-fotos/miniaturas/20261103-024632-e1dcf1.jpg
+```
+
+| Objeto | Formato | Tamaño |
+|---|---|---|
+| `originales/20261103-024632-e1dcf1.png` | PNG | 369.393 bytes (≈ 361 KiB) |
+| `miniaturas/20261103-024632-e1dcf1.jpg` | JPEG, 1024 px por el lado mayor | 142.127 bytes (≈ 139 KiB) |
+
+La miniatura pesa **2,6 veces menos** que el original (un 61,5 % menos). Con el ejemplo de la guía, 100 vistas de una galería de 20 fotos (2.000 descargas), servir los originales serían unos 0,69 GiB de salida (≈ 0,13 USD) y con las miniaturas 0,26 GiB (≈ 0,05 USD). La salida de Cloud Run hacia Colombia se cobra desde el primer byte (0,19 USD por GiB), por eso el backend nunca sirve los originales.
+
+Aquí la diferencia es moderada porque el original ya era liviano: es una captura de pantalla en PNG (Vision la etiqueta como "Screenshot", 0,846). Con una foto tomada directo con la cámara del teléfono, de unos 3 MB, la miniatura de ~100 KB pesaría unas 30 veces menos. Las 8 miniaturas que hay ahora en el bucket suman 632.019 bytes, unos 77 KiB en promedio.
 
 ### Fase 6. Reto de la semana
 

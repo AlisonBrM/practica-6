@@ -9,6 +9,19 @@ resource "google_storage_bucket" "fotos" {
 
   force_destroy = true
 
+  # Limpieza automática: el bucket borra solo los objetos (originales y
+  # miniaturas) con más de 7 días desde su creación. Cloud Storage evalúa las
+  # reglas de forma asíncrona, aproximadamente una vez al día, así que un objeto
+  # puede sobrevivir unas horas más después de cumplir los 7 días.
+  lifecycle_rule {
+    condition {
+      age = 7
+    }
+    action {
+      type = "Delete"
+    }
+  }
+
   depends_on = [google_project_service.apis]
 }
 
